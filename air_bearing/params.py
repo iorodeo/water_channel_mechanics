@@ -1,8 +1,7 @@
-
-Params= {
+params= {
         # Parameters for air bearing
-        'bearing_type'               : 'RAB4',
-        'slide_travel'               : 6,
+        'bearing_type'               : 'RAB6',
+        'slide_travel'               : 2,
         'slide_color'                : [0.2,0.9,0.2,1.0],
         'carriage_color'             : [0.1,0.5,0.5,1.0],
         'bearing_mount_color'        : [0.3,0.3,0.3,1.0],

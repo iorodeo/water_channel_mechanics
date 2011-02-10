@@ -4,7 +4,7 @@ Module for creating extruded beams with 80/20 profiles.
 from py2scad import *
 from params import params
 
-# Data for 80/20 profiles 
+# Data for 80/20 profiles
 profile2dxf= {
         '1010' : '1010.dxf',
         '1020' : '1020.dxf',
@@ -30,7 +30,7 @@ data_1020 = {
         }
 
 data_1030 = {
-        'dx' : 1.0, 
+        'dx' : 1.0,
         'dy' : 3.0,
         'slot_xpos' : (0.0,),
         'slot_ypos' : (-1.0, 0.0, 1.0),
@@ -51,7 +51,7 @@ data_1545 = {
         }
 
 data_3030 = {
-        'dx' : 3.0, 
+        'dx' : 3.0,
         'dy' : 3.0,
         'slot_xpos' : (-0.75, 0.75),
         'slot_ypos' : (-0.75, 0.75),
@@ -91,7 +91,7 @@ def extruded_beam(profile,length_in,color=None):
 if __name__ == '__main__':
 
     # Create part
-    profile = params['crossbeam_profile'] 
+    profile = params['crossbeam_profile']
     length = params['crossbeam_length']
     part = extruded_beam(profile,length)
     prog = SCAD_Prog()
