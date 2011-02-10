@@ -62,7 +62,7 @@ class Mount_Assembly(object):
 
 
     def get_assembly(self):
-        return self.parts.values() 
+        return self.parts.values()
 
 
 # -----------------------------------------------------------------------------

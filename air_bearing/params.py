@@ -1,7 +1,7 @@
 
-params= {
+Params= {
         # Parameters for air bearing
-        'bearing_type'               : 'RAB4', 
+        'bearing_type'               : 'RAB4',
         'slide_travel'               : 6,
         'slide_color'                : [0.2,0.9,0.2,1.0],
         'carriage_color'             : [0.1,0.5,0.5,1.0],
@@ -14,7 +14,7 @@ params= {
         'mount_plate_x_overhang'     : 1.0,
         'mount_plate_y_overhang'     : 0.5,
         'mount2crossbeam_hole_inset' : 0.75,
-        'mount2crossbeam_hole_size'  : 0.25, 
+        'mount2crossbeam_hole_size'  : 0.25,
         'mount_leveling_hole_size'   : 0.5,
         'mount_leveling_hole_inset'  : 0.5,
         'mount_plate_assembly_gap'   : 1.0,
