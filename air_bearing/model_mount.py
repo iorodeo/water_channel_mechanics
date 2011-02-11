@@ -58,6 +58,50 @@ class Model_Mount(object):
         top_plate = Difference([top_plate] + hole_list)
         self.parts['top_plate'] = top_plate
 
+    def __make_back_plate(self):
+
+        # Get parametes
+        bearing_type = self.params['bearing_type']
+        beam_profile = self.params['crossbeam_profile']
+        bearing_params = RAB.bearing_params[bearing_type]
+        beam_params = extruded_beam.profile_data[beam_profile]
+
+        # Create plate
+        x_overhang = self.params['mount_plate_x_overhang']
+        y_overhang = self.params['mount_plate_y_overhang']
+        length = bearing_params['carriage_length'] + 2*x_overhang
+        width = bearing_params['carriage_width'] + 2*y_overhang
+        thickness = self.params['mount_plate_thickness']
+        top_plate = Cube(size=[length,width,thickness])
+
+        # Create beam mount holes
+        radius = 0.5*self.params['mount2crossbeam_hole_size']
+        base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
+        hole_list = []
+        for xpos in beam_params['slot_ypos']:
+            for j in (-1,1):
+                ypos = j*(0.5*width - self.params['mount2crossbeam_hole_inset'])
+                hole = Translate(base_hole,v=[xpos,ypos,0])
+                hole_list.append(hole)
+
+        # Remove hole material
+        top_plate = Difference([top_plate] + hole_list)
+
+        # Create leveling holes
+        radius = 0.5*self.params['mount_leveling_hole_size']
+        base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
+        dx = 0.5*length - self.params['mount_leveling_hole_inset']
+        dy = 0.5*width - self.params['mount_leveling_hole_inset']
+        pos_list = [(dx,0),(-dx,dy), (-dx,-dy)]
+        hole_list = []
+        for xpos,ypos in pos_list:
+            hole = Translate(base_hole,v= [xpos,ypos,0])
+            hole_list.append(hole)
+
+        # Remove hole material
+        top_plate = Difference([top_plate] + hole_list)
+        self.parts['top_plate'] = top_plate
+
     def __make_bottom_plate(self):
 
         # Get parametes
