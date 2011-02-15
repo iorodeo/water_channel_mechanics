@@ -52,7 +52,6 @@ class SubModel(object):
         fuild_housing = Translate(fuild_housing,v=[-0.5*h,0,0])
         self.parts['fuild_housing'] = fuild_housing
 
-
     def __make_motor_housing(self):
         r = 0.5*self.params['body_diameter']
         h = self.params['motor_housing_length']
@@ -62,7 +61,15 @@ class SubModel(object):
         self.parts['motor_housing'] = motor_housing
 
     def get_assembly(self):
-        return self.parts.values()
+        # Create union of all parts
+        sub = Union(self.parts.values())
+        # Shift so that sub is centered w.r.t to hydrofoil
+        x_shift = -0.5*self.params['hydrofoil_length']
+        sub = Translate(sub,v=[x_shift,0,0])
+        # Shidt so that top of hydrofoil is at z=0
+        z_shift = -0.5*self.params['body_diameter'] - self.params['hydrofoil_height']
+        sub = Translate(sub,v=[0,0,z_shift])
+        return sub 
 
 
 def bullet(r,h):
@@ -114,25 +121,13 @@ def curve2polygon(x_pts,y_pts):
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
+    
+    from params import sub_model_params
 
-    params = {
-            'body_diameter'        : 6.00,
-            'fluid_housing_length' : 10.63,
-            'motor_housing_length' : 11.00, 
-            'anterior_cap_length'  : 7.50,
-            'nozzle_length'        : 11.13,
-            'nozzle_exit_diameter' : 2.00,
-            'nozzle_trans_param'   : 0.33,
-            'hydrofoil_height'     : 14.50,
-            'hydrofoil_length'     : 5.0,
-            'hydrofoil_width'      : 1.0,
-            }
-
-
-    sub = SubModel(params=params)
+    sub = SubModel(params=sub_model_params)
     sub_assem = sub.get_assembly()
 
     prog = SCAD_Prog()
     prog.fn = 70
     prog.add(sub_assem)
-    prog.write('test.scad')
+    prog.write('sub_model.scad')

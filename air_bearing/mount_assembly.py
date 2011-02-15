@@ -5,6 +5,7 @@ from py2scad import *
 import RAB
 import bearing_mount
 import extruded_beam
+import sub_model
 from params import params
 
 class Mount_Assembly(object):
@@ -12,6 +13,7 @@ class Mount_Assembly(object):
     def __init__(self,params):
         self.params = params
         self.__make_assembly()
+        self.__make_sub_model()
 
     def __make_assembly(self):
 
@@ -59,6 +61,16 @@ class Mount_Assembly(object):
         z_shift = 0.5*profile_thickness + 2*mount_thickness + mount_gap
         crossbeam = Translate(crossbeam,v=[0,0,z_shift])
         self.parts['crossbeam'] = crossbeam
+
+    def __make_sub_model(self):
+        sub_params = self.params['sub_model_params']
+        sub = sub_model.SubModel(params=sub_params)
+        sub_assem = sub.get_assembly()
+        bearing_type = self.params['bearing_type']
+        bearing_params = RAB.bearing_params[bearing_type]
+        z_shift = -bearing_params['carriage_height'] - 3 
+        sub_assem = Translate(sub_assem,v=[0,0,z_shift])
+        self.parts['sub_model'] = sub_assem 
 
 
     def get_assembly(self):
