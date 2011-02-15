@@ -184,7 +184,7 @@ if __name__ == '__main__':
     slide_travel = params['slide_travel']
 
     bearing = RAB(bearing_type, slide_travel, slide_color=[0.3,0.3,1,1],carriage_color=[1.0,0.3,0.3,1])
-    part_assem = bearing.get_assembly()
+    part_assem = bearing.get_assembly(show_slide_travel=True)
     prog = SCAD_Prog()
     prog.fn = 50
     prog.add(part_assem)
