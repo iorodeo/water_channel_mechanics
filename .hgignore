@@ -5,6 +5,7 @@ syntax: glob
 *.egg-info
 *.swp
 *.scad
+*.stl
 *.pkl
 *.komodo*
 *.egg-info
@@ -12,3 +13,4 @@ syntax: glob
 build
 dist
 .komodo*
+deb_dist

@@ -1,5 +1,5 @@
 """
-Module for creating extruded beams with 80/20 profiles.
+Module for creating extruded beams with dxf profiles.
 """
 from py2scad import *
 from params import params
@@ -91,13 +91,13 @@ def extruded_beam(profile,length_in,color=None):
 if __name__ == '__main__':
 
     # Create part
-    profile = params['crossbeam_profile']
-    length = params['crossbeam_length']
+    profile = params['bearing_mount_beam_profile']
+    length = params['bearing_mount_beam_length']
     part = extruded_beam(profile,length)
     prog = SCAD_Prog()
     prog.fn = 50
     prog.add(part)
-    prog.write('extruded_beam.scad')
+    prog.write('bearing_mount_beam.scad')
 
 
 

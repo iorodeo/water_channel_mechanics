@@ -42,7 +42,7 @@ class SubModel(object):
         cap = Rotate(cap,a=90,v=[0,1,0])
         x_shift = self.params['motor_housing_length']
         cap = Translate(cap,v=[x_shift,0,0])
-        self.parts['anterior_cap'] = cap 
+        self.parts['anterior_cap'] = cap
 
     def __make_fluid_housing(self):
         r = 0.5*self.params['body_diameter']
@@ -69,7 +69,7 @@ class SubModel(object):
         # Shidt so that top of hydrofoil is at z=0
         z_shift = -0.5*self.params['body_diameter'] - self.params['hydrofoil_height']
         sub = Translate(sub,v=[0,0,z_shift])
-        return sub 
+        return sub
 
 
 def bullet(r,h):
@@ -102,7 +102,7 @@ def make_nozzle(r1, r2, h, epsilon, num_pts = 100):
     poly = Rotate(poly,a=-90,v=[0,0,1])
     # Revolve
     part = Rotate_Extrude(poly)
-    return part  
+    return part
 
 
 def curve2polygon(x_pts,y_pts):
@@ -121,7 +121,7 @@ def curve2polygon(x_pts,y_pts):
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    
+
     from params import sub_model_params
 
     sub = SubModel(params=sub_model_params)

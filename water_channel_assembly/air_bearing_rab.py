@@ -68,7 +68,7 @@ class RAB(object):
     def __init__(self,bearing_type,slide_travel,slide_color=None,carriage_color=None):
         self.bearing_type = bearing_type
         self.params = bearing_params[bearing_type]
-        self.params['slide_travel'] = slide_travel
+        self.params['bearing_slide_travel'] = slide_travel
         self.slide_color = slide_color
         self.carriage_color = carriage_color
         self.__make_slide()
@@ -76,7 +76,7 @@ class RAB(object):
         self.__make_slide_travel()
 
     def set_slide_travel(self,val):
-        self.params['slide_travel'] = val
+        self.params['bearing_slide_travel'] = val
         self.__make_slide()
         self.__make_carriage()
         self.__make_slide_travel()
@@ -86,7 +86,7 @@ class RAB(object):
         Creates the slide component of the RAB air bearing.
         """
         # Create base rectangle for slide
-        length = self.params['slide_base_length'] + self.params['slide_travel']
+        length = self.params['slide_base_length'] + self.params['bearing_slide_travel']
         width = self.params['slide_width']
         height = self.params['slide_height']
         slide = Cube(size=[length,width,height])
@@ -144,7 +144,7 @@ class RAB(object):
         """
         Make a colored region showing the slides travel.
         """
-        length = self.params['carriage_width'] + self.params['slide_travel']
+        length = self.params['carriage_width'] + self.params['bearing_slide_travel']
         width = self.params['slide_width'] + self.params['slide_tolerance']
         height = self.params['slide_height'] +  self.params['slide_tolerance']
         slide_travel = Cube(size=[length,width,height])
@@ -181,14 +181,14 @@ class RAB(object):
 if __name__ == '__main__':
 
     bearing_type = params['bearing_type']
-    slide_travel = params['slide_travel']
+    slide_travel = params['bearing_slide_travel']
 
     bearing = RAB(bearing_type, slide_travel, slide_color=[0.3,0.3,1,1],carriage_color=[1.0,0.3,0.3,1])
     part_assem = bearing.get_assembly(show_slide_travel=True)
     prog = SCAD_Prog()
     prog.fn = 50
     prog.add(part_assem)
-    prog.write('rab.scad')
+    prog.write('air_bearing_rab.scad')
 
 
 

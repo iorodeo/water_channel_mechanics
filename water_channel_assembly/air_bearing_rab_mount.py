@@ -1,4 +1,4 @@
-import RAB
+import air_bearing_rab
 import extruded_beam
 from py2scad import *
 from params import params
@@ -20,16 +20,16 @@ class Bearing_Mount(object):
 #        """
 #        # Get parametes
 #        bearing_type = self.params['bearing_type']
-#        beam_profile = self.params['crossbeam_profile']
-#        bearing_params = RAB.bearing_params[bearing_type]
+#        beam_profile = self.params['extruded_beam_profile']
+#        bearing_params = air_bearing_rab.bearing_params[bearing_type]
 #        beam_params = extruded_beam.profile_data[beam_profile]
 #
 #        # Create plate
-#        x_overhang = self.params['mount_plate_x_overhang']
-#        y_overhang = self.params['mount_plate_y_overhang']
+#        x_overhang = self.params['bearing_mount_plate_x_overhang']
+#        y_overhang = self.params['bearing_mount_plate_y_overhang']
 #        length = bearing_params['carriage_length'] + 2*x_overhang
 #        width = bearing_params['carriage_width'] + 2*y_overhang
-#        thickness = self.params['mount_plate_thickness']
+#        thickness = self.params['bearing_mount_plate_thickness']
 #        part = Cube(size=[length,width,thickness])
 #
 #        # Create bearing mount holes
@@ -47,12 +47,12 @@ class Bearing_Mount(object):
 #        part = Difference([part] + hole_list)
 #
 #        # Create beam mount holes
-#        radius = 0.5*self.params['mount2crossbeam_hole_size']
+#        radius = 0.5*self.params['bearing_mount_to_extruded_beam_hole_size']
 #        base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
 #        hole_list = []
 #        for xpos in beam_params['slot_ypos']:
 #            for j in (-1,1):
-#                ypos = j*(0.5*width - self.params['mount2crossbeam_hole_inset'])
+#                ypos = j*(0.5*width - self.params['bearing_mount_to_extruded_beam_hole_inset'])
 #                hole = Translate(base_hole,v=[xpos,ypos,0])
 #                hole_list.append(hole)
 #
@@ -64,25 +64,25 @@ class Bearing_Mount(object):
 
         # Get parametes
         bearing_type = self.params['bearing_type']
-        beam_profile = self.params['crossbeam_profile']
-        bearing_params = RAB.bearing_params[bearing_type]
+        beam_profile = self.params['bearing_mount_beam_profile']
+        bearing_params = air_bearing_rab.bearing_params[bearing_type]
         beam_params = extruded_beam.profile_data[beam_profile]
 
         # Create plate
-        x_overhang = self.params['mount_plate_x_overhang']
-        y_overhang = self.params['mount_plate_y_overhang']
+        x_overhang = self.params['bearing_mount_plate_x_overhang']
+        y_overhang = self.params['bearing_mount_plate_y_overhang']
         length = bearing_params['carriage_length'] + 2*x_overhang
         width = bearing_params['carriage_width'] + 2*y_overhang
-        thickness = self.params['mount_plate_thickness']
+        thickness = self.params['bearing_mount_plate_thickness']
         top_plate = Cube(size=[length,width,thickness])
 
         # Create beam mount holes
-        radius = 0.5*self.params['mount2crossbeam_hole_size']
+        radius = 0.5*self.params['bearing_mount_plate_to_beam_hole_size']
         base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
         hole_list = []
         for xpos in beam_params['slot_ypos']:
             for j in (-1,1):
-                ypos = j*(0.5*width - self.params['mount2crossbeam_hole_inset'])
+                ypos = j*(0.5*width - self.params['bearing_mount_plate_to_beam_hole_inset'])
                 hole = Translate(base_hole,v=[xpos,ypos,0])
                 hole_list.append(hole)
 
@@ -90,10 +90,10 @@ class Bearing_Mount(object):
         top_plate = Difference([top_plate] + hole_list)
 
         # Create leveling holes
-        radius = 0.5*self.params['mount_leveling_hole_size']
+        radius = 0.5*self.params['bearing_mount_plate_leveling_hole_size']
         base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
-        dx = 0.5*length - self.params['mount_leveling_hole_inset']
-        dy = 0.5*width - self.params['mount_leveling_hole_inset']
+        dx = 0.5*length - self.params['bearing_mount_plate_leveling_hole_inset']
+        dy = 0.5*width - self.params['bearing_mount_plate_leveling_hole_inset']
         pos_list = [(dx,0),(-dx,dy), (-dx,-dy)]
         hole_list = []
         for xpos,ypos in pos_list:
@@ -108,16 +108,16 @@ class Bearing_Mount(object):
 
         # Get parametes
         bearing_type = self.params['bearing_type']
-        beam_profile = self.params['crossbeam_profile']
-        bearing_params = RAB.bearing_params[bearing_type]
+        beam_profile = self.params['bearing_mount_beam_profile']
+        bearing_params = air_bearing_rab.bearing_params[bearing_type]
         beam_params = extruded_beam.profile_data[beam_profile]
 
         # Create plate
-        x_overhang = self.params['mount_plate_x_overhang']
-        y_overhang = self.params['mount_plate_y_overhang']
+        x_overhang = self.params['bearing_mount_plate_x_overhang']
+        y_overhang = self.params['bearing_mount_plate_y_overhang']
         length = bearing_params['carriage_length'] + 2*x_overhang
         width = bearing_params['carriage_width'] + 2*y_overhang
-        thickness = self.params['mount_plate_thickness']
+        thickness = self.params['bearing_mount_plate_thickness']
         bottom_plate = Cube(size=[length,width,thickness])
 
         # Create bearing mount holes
@@ -136,10 +136,10 @@ class Bearing_Mount(object):
         self.parts['bottom_plate'] = bottom_plate
 
         # Create leveling holes
-        radius = 0.5*self.params['mount_leveling_hole_size']
+        radius = 0.5*self.params['bearing_mount_plate_leveling_hole_size']
         base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
-        dx = 0.5*length - self.params['mount_leveling_hole_inset']
-        dy = 0.5*width - self.params['mount_leveling_hole_inset']
+        dx = 0.5*length - self.params['bearing_mount_plate_leveling_hole_inset']
+        dy = 0.5*width - self.params['bearing_mount_plate_leveling_hole_inset']
         pos_list = [(dx,0),(-dx,dy), (-dx,-dy)]
         hole_list = []
         for xpos,ypos in pos_list:
@@ -164,8 +164,8 @@ class Bearing_Mount(object):
         top_plate = self.parts['top_plate']
         bottom_plate = self.parts['bottom_plate']
         # Tranlslate top plate into position
-        thickness = self.params['mount_plate_thickness']
-        gap = self.params['mount_plate_assembly_gap']
+        thickness = self.params['bearing_mount_plate_thickness']
+        gap = self.params['bearing_mount_plate_assembly_gap']
         top_plate = Translate(top_plate,v=[0,0,thickness+gap])
         # Create assembly list and add color if specified
         assembly =  [top_plate, bottom_plate]
@@ -184,10 +184,10 @@ class Bearing_Mount(object):
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    mount = Bearing_Mount(params)
-    assembly = mount.get_assembly()
+    bearing_mount = Bearing_Mount(params)
+    assembly = bearing_mount.get_assembly()
 
     prog = SCAD_Prog()
     prog.fn = 50
     prog.add(assembly)
-    prog.write('bearing_mount.scad')
+    prog.write('air_bearing_rab_mount.scad')
