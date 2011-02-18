@@ -28,8 +28,12 @@ params= {
         'bearing_mount_plate_leveling_hole_inset' : 0.5,
         'bearing_mount_plate_assembly_gap'        : 1.0,
         # Parameters for bearing mount beam
-        'bearing_mount_beam_profile'          : '2040',
-        'bearing_mount_beam_length'           : 5.0*12.0,
+        'bearing_mount_beam_profile' : '2040',
+        'bearing_mount_beam_length'  : 5.0*12.0,
+        'bearing_mount_beam_color'   : [0.1,0.5,0.5,1.0],
+        # Parameters for the water channel
+        'water_channel_rail_diameter' : 1.5,
+        'water_channel_rail_length' : 120,
         # Additional assembly params
         'sub_model_params'           : sub_model_params,
         }
