@@ -51,7 +51,8 @@ class Sled_Assembly(object):
         profile = self.params['bearing_mount_beam_profile']
         profile_data = extruded_beam.profile_data[profile]
         length = self.params['bearing_mount_beam_length']
-        bearing_mount_beam = extruded_beam.extruded_beam(profile,length)
+        color = self.params['bearing_mount_beam_color']
+        bearing_mount_beam = extruded_beam.extruded_beam(profile,length,color)
 
         # Rotate and Traslate cross beam into position
         # bearing_mount_beam = Rotate(bearing_mount_beam,a=90,v=[0,0,1])
@@ -75,7 +76,8 @@ class Sled_Assembly(object):
 
 
     def get_assembly(self):
-        return self.parts.values()
+        # return self.parts.values()
+        return Union(self.parts.values())
 
 
 # -----------------------------------------------------------------------------

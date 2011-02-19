@@ -1,3 +1,4 @@
+from __future__ import division
 from py2scad import *
 from params import params
 
@@ -6,130 +7,89 @@ class WaterChannel(object):
     Creates a model of the water channel.
     """
 
-    def __init__(self,bearing_type,slide_travel,slide_color=None,carriage_color=None):
-        self.bearing_type = bearing_type
-        self.params = bearing_params[bearing_type]
-        self.params['bearing_slide_travel'] = slide_travel
-        self.slide_color = slide_color
-        self.carriage_color = carriage_color
-        self.__make_slide()
-        self.__make_carriage()
-        self.__make_slide_travel()
+    def __init__(self,params):
+        self.params = params
+        self.parts = {}
+        self.__make_rails()
+        self.__make_tank()
+        self.__make_water()
 
-    def set_slide_travel(self,val):
-        self.params['bearing_slide_travel'] = val
-        self.__make_slide()
-        self.__make_carriage()
-        self.__make_slide_travel()
+    def __make_rails(self):
+        """
+        Creates the water channel rails
+        """
+        rail_diameter = self.params['water_channel_rail_diameter']
+        rail_rail_distance = self.params['water_channel_rail_rail_distance']
+        rail_length = self.params['water_channel_rail_length']
+        rail_color = self.params['water_channel_rail_color']
 
-    def __make_slide(self):
-        """
-        Creates the slide component of the RAB air bearing.
-        """
-        # Create base rectangle for slide
-        length = self.params['slide_base_length'] + self.params['bearing_slide_travel']
-        width = self.params['slide_width']
-        height = self.params['slide_height']
-        slide = Cube(size=[length,width,height])
-        # Create the mounting holes
-        radius = 0.5*self.params['slide_screw_size']
-        base_hole = Cylinder(r1=radius, r2=radius, h=2*height)
-        hole_list = []
-        for i in (-1,1):
-            for j in (-1,1):
-                xpos = i*(0.5*length - self.params['slide_screw_inset'])
-                ypos = j*(0.5*self.params['slide_screw_dW'])
-                hole = Translate(base_hole,v=[xpos,ypos,0])
-                hole_list.append(hole)
-        # Remove hole material
-        slide = Difference([slide] + hole_list)
-        # Add color to slide if available
-        if not self.slide_color is None:
-            slide = Color(slide,rgba=self.slide_color)
-        self.slide = slide
+        rail_1 = Cylinder(r1=rail_diameter/2,r2=rail_diameter/2,h=rail_length)
+        rail_1 = Rotate(rail_1,a=90,v=[0,1,0])
+        rail_1 = Translate(rail_1,v=[0,rail_rail_distance/2,0])
+        rail_1 = Color(rail_1,rail_color)
 
-    def __make_carriage(self):
-        """
-        Creates the carriage component of the RAB air bearing.
-        """
-        # Create base rectangle
-        length = self.params['carriage_length']
-        width = self.params['carriage_width']
-        height = self.params['carriage_height']
-        carriage = Cube(size=[length, width, height])
+        rail_2 = Cylinder(r1=rail_diameter/2,r2=rail_diameter/2,h=rail_length)
+        rail_2 = Rotate(rail_2,a=90,v=[0,1,0])
+        rail_2 = Translate(rail_2,v=[0,-rail_rail_distance/2,0])
+        rail_2 = Color(rail_2,rail_color)
 
-        # Subtract slide from carraige
-        slide_width = self.params['slide_width'] + 2*self.params['slide_tolerance']
-        slide_height  = self.params['slide_height'] + 2*self.params['slide_tolerance']
-        slide_cube = Cube(size=[2*length,slide_width,slide_height])
-        carriage = Difference([carriage,slide_cube])
+        self.parts['rail_1'] = rail_1
+        self.parts['rail_2'] = rail_2
 
-        # Create mounting holes
-        radius = 0.5*self.params['carriage_screw_size']
-        base_hole = Cylinder(r1=radius,r2=radius, h=2*height)
-        hole_list = []
-        for i in (-1,1):
-            for j in (-1,1):
-                xpos = i*0.5*self.params['carriage_screw_dL']
-                ypos = j*0.5*self.params['carriage_screw_dW']
-                hole = Translate(base_hole,v=[xpos,ypos,0])
-                hole_list.append(hole)
-        # Remove hole material
-        carriage = Difference([carriage]+hole_list)
-        # Add color to carriage is available
-        if not self.carriage_color is None:
-            carriage = Color(carriage,rgba=self.carriage_color)
-        self.carriage = carriage
+    def __make_tank(self):
+        """
+        Creates the water channel tank
+        """
+        tank_length = self.params['water_channel_tank_length']
+        tank_thickness = self.params['water_channel_tank_thickness']
+        channel_depth = self.params['water_channel_channel_depth']
+        channel_width = self.params['water_channel_channel_width']
+        rail_tank_distance = self.params['water_channel_rail_tank_distance']
+        tank_color = self.params['water_channel_tank_color']
+        show_tank = self.params['water_channel_show_tank'].lower()
+        # Make tank 2 times bigger in z direction, then cut in half
+        channel = Cube(size=[tank_length*1.1,channel_width,channel_depth*2])
+        tank = Cube(size=[tank_length,channel_width+tank_thickness*2,channel_depth*2+tank_thickness*2])
+        tank = Difference([tank,channel])
+        tank_half = Cube(size=[tank_length*1.1,(channel_width+tank_thickness*2)*1.1,(channel_depth+tank_thickness)*2])
+        tank_half = Translate(tank_half,v=[0,0,channel_depth+tank_thickness])
+        tank = Difference([tank,tank_half])
+        tank = Translate(tank,v=[0,0,-rail_tank_distance])
+        tank = Color(tank,tank_color)
+        if show_tank == 'true':
+            self.parts['tank'] = tank
 
-    def __make_slide_travel(self,color=[0,0,1,1]):
+    def __make_water(self):
         """
-        Make a colored region showing the slides travel.
+        Creates the water channel water
         """
-        length = self.params['carriage_width'] + self.params['bearing_slide_travel']
-        width = self.params['slide_width'] + self.params['slide_tolerance']
-        height = self.params['slide_height'] +  self.params['slide_tolerance']
-        slide_travel = Cube(size=[length,width,height])
-        self.slide_travel = Color(slide_travel,rgba=color)
+        tank_length = self.params['water_channel_tank_length']
+        channel_depth = self.params['water_channel_channel_depth']
+        channel_width = self.params['water_channel_channel_width']
+        rail_tank_distance = self.params['water_channel_rail_tank_distance']
+        water_depth = self.params['water_channel_water_depth']
+        water_color = self.params['water_channel_water_color']
+        show_water = self.params['water_channel_show_water'].lower()
+        water = Cube(size=[tank_length,channel_width,water_depth])
+        water = Translate(water,v=[0,0,-water_depth/2-(channel_depth-water_depth)-rail_tank_distance])
+        water = Color(water,water_color)
+        if show_water == 'true':
+            self.parts['water'] = water
 
-    def get_assembly(self,show_slide_travel=False,color=None):
+    def get_assembly(self):
         """
-        Returns air bearing parts assembly
+        Returns water_channel parts assembly
         """
-        assembly = [self.slide, self.carriage]
-        if show_slide_travel == True:
-            assembly.append(self.slide_travel)
-        if not color is None:
-            assembly_new = []
-            for part in assembly:
-                part = Color(part,rgba=color)
-                assembly_new.append(part)
-            assembly = assembly_new
-        return assembly
-
-    def get_slide(self):
-        """
-        Returns the air bearing slide
-        """
-        return self.slide
-
-    def get_carriage(self):
-        """
-        Reurns the air bearing carriage
-        """
-        return self.carriage
+        return Union(self.parts.values())
 
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
-
-    bearing_type = params['bearing_type']
-    slide_travel = params['bearing_slide_travel']
-
-    bearing = RAB(bearing_type, slide_travel, slide_color=[0.3,0.3,1,1],carriage_color=[1.0,0.3,0.3,1])
-    part_assem = bearing.get_assembly(show_slide_travel=True)
+    water_channel = WaterChannel(params)
+    part_assem = water_channel.get_assembly()
     prog = SCAD_Prog()
     prog.fn = 50
     prog.add(part_assem)
-    prog.write('air_bearing_rab.scad')
+    prog.write('water_channel.scad')
 
 
 
