@@ -1,5 +1,5 @@
 import air_bearing_rab
-import extruded_beam
+import extruded_profile
 from py2scad import *
 from params import params
 
@@ -20,9 +20,9 @@ class Bearing_Mount(object):
 #        """
 #        # Get parametes
 #        bearing_type = self.params['bearing_type']
-#        beam_profile = self.params['extruded_beam_profile']
+#        beam_profile = self.params['extruded_profile_profile']
 #        bearing_params = air_bearing_rab.bearing_params[bearing_type]
-#        beam_params = extruded_beam.profile_data[beam_profile]
+#        beam_params = extruded_profile.profile_data[beam_profile]
 #
 #        # Create plate
 #        x_overhang = self.params['bearing_mount_plate_x_overhang']
@@ -47,12 +47,12 @@ class Bearing_Mount(object):
 #        part = Difference([part] + hole_list)
 #
 #        # Create beam mount holes
-#        radius = 0.5*self.params['bearing_mount_to_extruded_beam_hole_size']
+#        radius = 0.5*self.params['bearing_mount_to_extruded_profile_hole_size']
 #        base_hole = Cylinder(r1=radius,r2=radius,h=2*thickness)
 #        hole_list = []
 #        for xpos in beam_params['slot_ypos']:
 #            for j in (-1,1):
-#                ypos = j*(0.5*width - self.params['bearing_mount_to_extruded_beam_hole_inset'])
+#                ypos = j*(0.5*width - self.params['bearing_mount_to_extruded_profile_hole_inset'])
 #                hole = Translate(base_hole,v=[xpos,ypos,0])
 #                hole_list.append(hole)
 #
@@ -66,7 +66,7 @@ class Bearing_Mount(object):
         bearing_type = self.params['bearing_type']
         beam_profile = self.params['bearing_mount_beam_profile']
         bearing_params = air_bearing_rab.bearing_params[bearing_type]
-        beam_params = extruded_beam.profile_data[beam_profile]
+        beam_params = extruded_profile.profile_data[beam_profile]
 
         # Create plate
         x_overhang = self.params['bearing_mount_plate_x_overhang']
@@ -110,7 +110,7 @@ class Bearing_Mount(object):
         bearing_type = self.params['bearing_type']
         beam_profile = self.params['bearing_mount_beam_profile']
         bearing_params = air_bearing_rab.bearing_params[bearing_type]
-        beam_params = extruded_beam.profile_data[beam_profile]
+        beam_params = extruded_profile.profile_data[beam_profile]
 
         # Create plate
         x_overhang = self.params['bearing_mount_plate_x_overhang']

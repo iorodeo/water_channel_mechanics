@@ -20,7 +20,7 @@ class Model_Mount(object):
         bearing_type = self.params['bearing_type']
         beam_profile = self.params['crossbeam_profile']
         bearing_params = RAB.bearing_params[bearing_type]
-        beam_params = extruded_beam.profile_data[beam_profile]
+        beam_params = extruded_profile.profile_data[beam_profile]
 
         # Create plate
         x_overhang = self.params['mount_plate_x_overhang']
@@ -64,7 +64,7 @@ class Model_Mount(object):
         bearing_type = self.params['bearing_type']
         beam_profile = self.params['crossbeam_profile']
         bearing_params = RAB.bearing_params[bearing_type]
-        beam_params = extruded_beam.profile_data[beam_profile]
+        beam_params = extruded_profile.profile_data[beam_profile]
 
         # Create plate
         x_overhang = self.params['mount_plate_x_overhang']
@@ -108,7 +108,7 @@ class Model_Mount(object):
         bearing_type = self.params['bearing_type']
         beam_profile = self.params['crossbeam_profile']
         bearing_params = RAB.bearing_params[bearing_type]
-        beam_params = extruded_beam.profile_data[beam_profile]
+        beam_params = extruded_profile.profile_data[beam_profile]
 
         # Create plate
         x_overhang = self.params['mount_plate_x_overhang']

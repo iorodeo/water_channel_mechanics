@@ -2,7 +2,7 @@ from __future__ import division
 from py2scad import *
 from params import params
 import water_channel
-import sled_assembly
+import sled_assembly_model
 
 class WaterChannelAssembly(object):
     """
@@ -26,7 +26,7 @@ class WaterChannelAssembly(object):
         # self.parts['water_channel'] = self.water_channel
 
         # Create sled assembly
-        self.parts['sled_assembly'] = sled_assembly.Sled_Assembly(self.params).get_assembly()
+        self.parts['sled_assembly_model'] = sled_assembly_model.Sled_Assembly_Model(self.params).get_assembly()
         # self.sled_assembly = sled_assembly.Sled_Assembly(self.params).get_assembly()
         # self.sled_assembly = Translate(self.sled_assembly,v=[0,0,0])
         # self.parts['sled_assembly'] = self.sled_assembly
