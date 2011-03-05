@@ -3,6 +3,7 @@ from py2scad import *
 from params import params
 import water_channel
 import sled_assembly_model
+import sled_assembly_motorized
 
 class WaterChannelAssembly(object):
     """
@@ -21,15 +22,18 @@ class WaterChannelAssembly(object):
 
         # Create water channel
         self.parts['water_channel'] = water_channel.WaterChannel(self.params).get_assembly()
-        # self.water_channel = water_channel.WaterChannel(self.params).get_assembly()
-        # self.water_channel = Translate(self.water_channel,v=[0,0,0])
-        # self.parts['water_channel'] = self.water_channel
 
-        # Create sled assembly
+        # Create model sled assembly
         self.parts['sled_assembly_model'] = sled_assembly_model.Sled_Assembly_Model(self.params).get_assembly()
-        # self.sled_assembly = sled_assembly.Sled_Assembly(self.params).get_assembly()
-        # self.sled_assembly = Translate(self.sled_assembly,v=[0,0,0])
-        # self.parts['sled_assembly'] = self.sled_assembly
+
+        # Create motorized sled assembly
+        self.sled_assembly_motorized = sled_assembly_motorized.Sled_Assembly_Motorized(self.params).get_assembly()
+        sled_assembly_model_length = params['sled_assembly_model_length']
+        sled_assembly_motorized_length = params['sled_assembly_motorized_length']
+        sled_sled_gap = params['sled_sled_gap']
+        sled_assembly_motorized_tx = sled_assembly_model_length/2 + sled_assembly_motorized_length/2 + sled_sled_gap
+        self.sled_assembly_motorized = Translate(self.sled_assembly_motorized,v=[sled_assembly_motorized_tx,0,0])
+        self.parts['sled_assembly_motorized'] = self.sled_assembly_motorized
 
     def get_assembly(self):
         """

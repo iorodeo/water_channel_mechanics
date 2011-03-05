@@ -1,3 +1,4 @@
+from __future__ import division
 import air_bearing_rab
 import extruded_profile
 from py2scad import *
@@ -163,10 +164,12 @@ class Bearing_Mount(object):
         # Get parts
         top_plate = self.parts['top_plate']
         bottom_plate = self.parts['bottom_plate']
-        # Tranlslate top plate into position
+        # Tranlslate plates into position
         thickness = self.params['bearing_mount_plate_thickness']
         gap = self.params['bearing_mount_plate_assembly_gap']
-        top_plate = Translate(top_plate,v=[0,0,thickness+gap])
+        tz = (thickness + gap)/2
+        top_plate = Translate(top_plate,v=[0,0,tz])
+        bottom_plate = Translate(bottom_plate,v=[0,0,-tz])
         # Create assembly list and add color if specified
         assembly =  [top_plate, bottom_plate]
         if not color is None:

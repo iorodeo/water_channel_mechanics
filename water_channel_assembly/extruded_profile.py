@@ -1,6 +1,7 @@
 """
 Module for creating extruded parts with dxf profiles.
 """
+from __future__ import division
 from py2scad import *
 from params import params
 

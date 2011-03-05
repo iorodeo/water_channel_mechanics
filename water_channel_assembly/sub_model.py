@@ -1,3 +1,4 @@
+from __future__ import division
 import scipy
 from py2scad import *
 
@@ -7,21 +8,30 @@ class SubModel(object):
     def __init__(self,params):
         self.params = params
         self.parts = {}
+        self.__make_mount_plate()
+        self.__make_hydrofoil()
+        self.__make_nozzle()
         self.__make_anterior_cap()
         self.__make_motor_housing()
         self.__make_fluid_housing()
-        self.__make_nozzle()
-        self.__make_hydrofoil()
+
+    def __make_mount_plate(self):
+        self.mount_plate_x = self.params['mount_plate_length']
+        self.mount_plate_y = self.params['mount_plate_length']
+        self.mount_plate_z = self.params['mount_plate_thickness']
+        mount_plate = Cube(size=[self.mount_plate_x,self.mount_plate_y,self.mount_plate_z])
+        self.parts['mount_plate'] = mount_plate
 
     def __make_hydrofoil(self):
-        h = self.params['hydrofoil_height']
-        w = self.params['hydrofoil_width']
-        l = self.params['hydrofoil_length']
-        hydrofoil = Cylinder(r1=0.5,r2=0.5,h=h)
-        hydrofoil = Scale(hydrofoil,v=[l,w,1])
-        x_shift = 0.5*l
-        z_shift =  0.5*h + 0.5*self.params['body_diameter']
-        hydrofoil = Translate(hydrofoil,v=[x_shift,0,z_shift])
+        self.hydrofoil_y = self.params['hydrofoil_width']
+        self.hydrofoil_x = self.params['hydrofoil_length']
+        self.hydrofoil_z = self.params['hydrofoil_height']
+        hydrofoil = Cylinder(r1=0.5,r2=0.5,h=self.hydrofoil_z)
+        hydrofoil = Scale(hydrofoil,v=[self.hydrofoil_x,self.hydrofoil_y,1])
+        # x_shift = 0.5*l
+        # hydrofoil_tz =  0.5*h + 0.5*self.params['body_diameter']
+        self.hydrofoil_tz =  self.hydrofoil_z/2 + self.mount_plate_z/2
+        hydrofoil = Translate(hydrofoil,v=[0,0,-self.hydrofoil_tz])
         self.parts['hydrofoil'] = hydrofoil
 
     def __make_nozzle(self):
@@ -31,8 +41,9 @@ class SubModel(object):
         epsilon = self.params['nozzle_trans_param']
         nozzle = make_nozzle(r1,r2,h,epsilon)
         nozzle = Rotate(nozzle,a=90,v=[0,1,0])
-        x_shift = -self.params['fluid_housing_length'] - 0.5*h
-        nozzle = Translate(nozzle,v=[x_shift,0,0])
+        self.nozzle_tx = -self.params['fluid_housing_length'] - 0.5*h - self.hydrofoil_x/2
+        self.nozzle_tz = -self.hydrofoil_tz - self.hydrofoil_z/2 - self.params['body_diameter']/2
+        nozzle = Translate(nozzle,v=[self.nozzle_tx,0,self.nozzle_tz])
         self.parts['nozzle'] = nozzle
 
     def __make_anterior_cap(self):
@@ -40,8 +51,9 @@ class SubModel(object):
         h = self.params['anterior_cap_length']
         cap = bullet(r,h)
         cap = Rotate(cap,a=90,v=[0,1,0])
-        x_shift = self.params['motor_housing_length']
-        cap = Translate(cap,v=[x_shift,0,0])
+        self.anterior_cap_tx = self.params['motor_housing_length'] - self.hydrofoil_x/2
+        self.anterior_cap_tz = self.nozzle_tz
+        cap = Translate(cap,v=[self.anterior_cap_tx,0,self.anterior_cap_tz])
         self.parts['anterior_cap'] = cap
 
     def __make_fluid_housing(self):
@@ -49,7 +61,9 @@ class SubModel(object):
         h = self.params['fluid_housing_length']
         fuild_housing = Cylinder(r1=r, r2=r, h=h)
         fuild_housing = Rotate(fuild_housing,a=90,v=[0,1,0])
-        fuild_housing = Translate(fuild_housing,v=[-0.5*h,0,0])
+        self.fluid_housing_tx = -h/2 - self.hydrofoil_x/2
+        self.fluid_housing_tz = self.nozzle_tz
+        fuild_housing = Translate(fuild_housing,v=[self.fluid_housing_tx,0,self.fluid_housing_tz])
         self.parts['fuild_housing'] = fuild_housing
 
     def __make_motor_housing(self):
@@ -57,18 +71,21 @@ class SubModel(object):
         h = self.params['motor_housing_length']
         motor_housing = Cylinder(r1=r, r2=r, h=h)
         motor_housing = Rotate(motor_housing,a=90,v=[0,1,0])
-        motor_housing = Translate(motor_housing,v=[0.5*h,0,0])
+        self.motor_housing_tx = h/2 - self.hydrofoil_x/2
+        self.motor_housing_tz = self.nozzle_tz
+        motor_housing = Translate(motor_housing,v=[self.motor_housing_tx,0,self.motor_housing_tz])
         self.parts['motor_housing'] = motor_housing
 
     def get_assembly(self):
         # Create union of all parts
         sub = Union(self.parts.values())
         # Shift so that sub is centered w.r.t to hydrofoil
-        x_shift = -0.5*self.params['hydrofoil_length']
-        sub = Translate(sub,v=[x_shift,0,0])
+        # x_shift = -0.5*self.params['hydrofoil_length']
+        # sub = Translate(sub,v=[x_shift,0,0])
         # Shidt so that top of hydrofoil is at z=0
-        z_shift = -0.5*self.params['body_diameter'] - self.params['hydrofoil_height']
-        sub = Translate(sub,v=[0,0,z_shift])
+        # z_shift = -0.5*self.params['body_diameter'] - self.params['hydrofoil_height']
+        sub_tz = -self.params['mount_plate_thickness']/2
+        sub = Translate(sub,v=[0,0,sub_tz])
         return sub
 
 
