@@ -33,7 +33,7 @@ params= {
         'bearing_mount_beam_profile' : '2040',
         'bearing_mount_beam_length'  : 35.75,
         'bearing_mount_beam_color'   : [0.5,0.5,0.5,1.0],
-        'bearing_mount_beam_tz'      : 6.0,
+        'bearing_mount_beam_tz'      : 10.0,
         # Parameters for the water channel
         'water_channel_rail_diameter'       : 1.5,
         'water_channel_rail_rail_distance'  : 48.75,
@@ -74,8 +74,11 @@ params= {
         'sled_sled_gap' : 4.0,
 
         # Parameters for the model mount plates
-        'model_mount_plate_thickness'      : 0.5,
-        'model_mount_plate_bearing_offset' : 2.0,
+        'model_mount_plate_thickness'                   : 0.5,
+        'model_mount_plate_bearing_offset'              : 2.0,
+        'model_mount_plate_horizontal_vertical_overlap' : 0.25,
+        'model_mount_plate_vertical_underhang'          : 10.0,
+        'model_mount_plate_fit_clearance'               : 0.015,
 
         # Additional assembly params
         'sub_model_params'           : sub_model_params,

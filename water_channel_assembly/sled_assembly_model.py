@@ -66,7 +66,8 @@ class Sled_Assembly_Model(object):
         y_beam_void_z = y_beam_z - y_beam_thickness*2
         y_beam_void = Cube(size=[y_beam_void_x,y_beam_void_y,y_beam_void_z])
         y_beam = Difference([y_beam,y_beam_void])
-        y_beam = Color(y_beam,params['sled_assembly_model_color'])
+        sled_assembly_model_color = params['sled_assembly_model_color']
+        y_beam = Color(y_beam,sled_assembly_model_color)
         y_beam_tx = params['sled_assembly_model_length']/2 - params['sled_assembly_model_y_beam_width']/2
         y_beam_tz = params['pillowblock_mount_face_tz'] + params['pillowblock_mount_plate_thickness'] + y_beam_z/2
         y_beam_1 = Translate(y_beam,v=[y_beam_tx,0,y_beam_tz])
@@ -108,7 +109,7 @@ class Sled_Assembly_Model(object):
         slide_travel = self.params['bearing_slide_travel']
         slide_color = self.params['bearing_slide_color']
         carriage_color = self.params['bearing_carriage_color']
-        bearing_params = air_bearing_rab.bearing_params[bearing_type]
+        self.bearing_params = air_bearing_rab.bearing_params[bearing_type]
         air_bearing_maker = air_bearing_rab.RAB(bearing_type,
                                                 slide_travel,
                                                 slide_color = slide_color,
@@ -117,31 +118,57 @@ class Sled_Assembly_Model(object):
         air_bearing = air_bearing_maker.get_assembly()
 
         # Translate air bearing to mate with the bearing mount
-        air_bearing_carriage_height = bearing_params['carriage_height']
-        air_bearing_tz = bearing_mount_tz - (bearing_mount_thickness + bearing_mount_gap/2) - air_bearing_carriage_height/2
-        air_bearing = Translate(air_bearing,v=[0,0,air_bearing_tz])
+        air_bearing_carriage_height = self.bearing_params['carriage_height']
+        self.air_bearing_tz = bearing_mount_tz - (bearing_mount_thickness + bearing_mount_gap/2) - air_bearing_carriage_height/2
+        air_bearing = Translate(air_bearing,v=[0,0,self.air_bearing_tz])
         self.parts['air_bearing'] = air_bearing
 
         # Create horizontal model mount plate
         sub_params = self.params['sub_model_params']
-        model_mount_plate_horizontal_x = bearing_params['slide_base_length'] + slide_travel - 2*bearing_params['slide_screw_inset'] - params['model_mount_plate_thickness']
+        model_mount_plate_horizontal_x = self.bearing_params['slide_base_length'] + slide_travel - 2*self.bearing_params['slide_screw_inset'] - params['model_mount_plate_thickness'] + 2*params['model_mount_plate_horizontal_vertical_overlap']
         model_mount_plate_horizontal_y = sub_params['mount_plate_length']
         self.model_mount_plate_horizontal_z = params['model_mount_plate_thickness']
         model_mount_plate_horizontal = Cube(size=[model_mount_plate_horizontal_x,model_mount_plate_horizontal_y,self.model_mount_plate_horizontal_z])
-        self.model_mount_plate_horizontal_tz = air_bearing_tz - bearing_params['carriage_height']/2 - self.model_mount_plate_horizontal_z/2 - params['model_mount_plate_bearing_offset']
+        self.model_mount_plate_horizontal_tz = self.air_bearing_tz - self.bearing_params['carriage_height']/2 - params['model_mount_plate_bearing_offset'] - self.model_mount_plate_horizontal_z/2
         model_mount_plate_horizontal = Translate(model_mount_plate_horizontal,v=[0,0,self.model_mount_plate_horizontal_tz])
+        model_mount_plate_horizontal = Color(model_mount_plate_horizontal,sled_assembly_model_color)
         self.parts['model_mount_plate_horizontal'] = model_mount_plate_horizontal
 
         # Create vertical model mount plates
         model_mount_plate_vertical_x = params['model_mount_plate_thickness']
+        model_mount_plate_vertical_y = sub_params['mount_plate_length']
+        model_mount_plate_vertical_z = abs(self.air_bearing_tz - self.model_mount_plate_horizontal_tz + params['model_mount_plate_vertical_underhang'])
+        model_mount_plate_vertical = Cube(size=[model_mount_plate_vertical_x,model_mount_plate_vertical_y,model_mount_plate_vertical_z])
+        model_mount_plate_vertical_tx = (self.bearing_params['slide_base_length'] + slide_travel - 2*self.bearing_params['slide_screw_inset'])/2
+        model_mount_plate_vertical_tz = self.air_bearing_tz - model_mount_plate_vertical_z/2
+        model_mount_plate_vertical = Color(model_mount_plate_vertical,sled_assembly_model_color)
+        fit_clearance = params['model_mount_plate_fit_clearance']
+        slide_negative_x = self.bearing_params['slide_base_length'] + slide_travel + fit_clearance
+        slide_negative_y = self.bearing_params['slide_width'] + fit_clearance
+        slide_negative_z = self.bearing_params['slide_height'] + fit_clearance/2
+        slide_negative = Cube(size=[slide_negative_x,slide_negative_y,slide_negative_z])
+        slide_negative = Translate(slide_negative,v=[0,0,self.air_bearing_tz])
+        model_mount_plate_horizontal_negative = Cube(size=[(model_mount_plate_horizontal_x + fit_clearance),(model_mount_plate_horizontal_y + fit_clearance),(self.model_mount_plate_horizontal_z + fit_clearance)])
+        model_mount_plate_horizontal_negative = Translate(model_mount_plate_horizontal_negative,v=[0,0,self.model_mount_plate_horizontal_tz])
+        model_mount_plate_vertical_1 = Translate(model_mount_plate_vertical,v=[model_mount_plate_vertical_tx,0,model_mount_plate_vertical_tz])
+        model_mount_plate_vertical_1 = Difference([model_mount_plate_vertical_1,slide_negative])
+        model_mount_plate_vertical_1 = Difference([model_mount_plate_vertical_1,model_mount_plate_horizontal_negative])
+
+        # model_mount_plate_vertical_1 = Translate(model_mount_plate_vertical_1,v=[1.0,0,0])
+
+        model_mount_plate_vertical_1 = Color(model_mount_plate_vertical_1,sled_assembly_model_color)
+        self.parts['model_mount_plate_vertical_1'] = model_mount_plate_vertical_1
+        model_mount_plate_vertical_2 = Translate(model_mount_plate_vertical,v=[-model_mount_plate_vertical_tx,0,model_mount_plate_vertical_tz])
+        model_mount_plate_vertical_2 = Difference([model_mount_plate_vertical_2,slide_negative])
+        model_mount_plate_vertical_2 = Color(model_mount_plate_vertical_2,sled_assembly_model_color)
+        self.parts['model_mount_plate_vertical_2'] = model_mount_plate_vertical_2
 
     def __make_sub_model(self):
         sub_params = self.params['sub_model_params']
         sub = sub_model.SubModel(params=sub_params)
         sub_assem = sub.get_assembly()
         bearing_type = self.params['bearing_type']
-        bearing_params = air_bearing_rab.bearing_params[bearing_type]
-        # sub_tz = -bearing_params['carriage_height'] - 3
+        # sub_tz = -self.bearing_params['carriage_height'] - 3
         sub_tz = self.model_mount_plate_horizontal_tz - self.model_mount_plate_horizontal_z/2
         sub_assem = Translate(sub_assem,v=[0,0,sub_tz])
         self.parts['sub_model'] = sub_assem
