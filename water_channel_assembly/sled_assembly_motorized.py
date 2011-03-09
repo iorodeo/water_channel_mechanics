@@ -19,12 +19,12 @@ class Sled_Assembly_Motorized(object):
         # Create pillowblocks
         pillowblock_profile = params['pillowblock_profile']
         pillowblock_length = params['pillowblock_length']
-        pillowblock_mount_plate_length = params['pillowblock_mount_plate_length']
+        pillowblock_mount_plate_width = params['pillowblock_mount_plate_width']
         pillowblock = extruded_profile.extruded_profile(pillowblock_profile,pillowblock_length)
         pillowblock = Color(pillowblock,params['pillowblock_color'])
         pillowblock = Rotate(pillowblock,a=90,v=[1,0,0])
         pillowblock = Rotate(pillowblock,a=90,v=[0,0,1])
-        px = params['sled_assembly_motorized_length']/2 - params['pillowblock_mount_plate_length']/2
+        px = params['sled_assembly_motorized_length']/2 - params['pillowblock_mount_plate_width']/2
         py = params['water_channel_rail_rail_distance']/2
         pillowblock_1 = Translate(pillowblock,v=[px,py,0])
         self.parts['pillowblock_1'] = pillowblock_1
@@ -36,7 +36,7 @@ class Sled_Assembly_Motorized(object):
         self.parts['pillowblock_4'] = pillowblock_4
 
         # Create pillowblock mount plates
-        pillowblock_mount_x = params['pillowblock_mount_plate_length']
+        pillowblock_mount_x = params['pillowblock_mount_plate_width']
         pillowblock_mount_y = pillowblock_mount_x
         pillowblock_mount_z = params['pillowblock_mount_plate_thickness']
         pillowblock_mount = Cube(size=[pillowblock_mount_x,pillowblock_mount_y,pillowblock_mount_z])

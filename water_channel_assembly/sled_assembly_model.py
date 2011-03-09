@@ -20,77 +20,72 @@ class Sled_Assembly_Model(object):
 
         self.parts = {}
 
-        # Create pillowblocks
-        pillowblock_profile = params['pillowblock_profile']
-        pillowblock_length = params['pillowblock_length']
-        pillowblock_mount_plate_length = params['pillowblock_mount_plate_length']
-        pillowblock = extruded_profile.extruded_profile(pillowblock_profile,pillowblock_length)
-        pillowblock = Color(pillowblock,params['pillowblock_color'])
-        pillowblock = Rotate(pillowblock,a=90,v=[1,0,0])
-        pillowblock = Rotate(pillowblock,a=90,v=[0,0,1])
-        px = params['sled_assembly_model_length']/2 - params['pillowblock_mount_plate_length']/2
-        py = params['water_channel_rail_rail_distance']/2
-        pillowblock_1 = Translate(pillowblock,v=[px,py,0])
-        self.parts['pillowblock_1'] = pillowblock_1
-        pillowblock_2 = Translate(pillowblock,v=[-px,py,0])
-        self.parts['pillowblock_2'] = pillowblock_2
-        pillowblock_3 = Translate(pillowblock,v=[px,-py,0])
-        self.parts['pillowblock_3'] = pillowblock_3
-        pillowblock_4 = Translate(pillowblock,v=[-px,-py,0])
-        self.parts['pillowblock_4'] = pillowblock_4
-
-        # Create pillowblock mount plates
-        pillowblock_mount_x = params['pillowblock_mount_plate_length']
-        pillowblock_mount_y = pillowblock_mount_x
-        pillowblock_mount_z = params['pillowblock_mount_plate_thickness']
-        pillowblock_mount = Cube(size=[pillowblock_mount_x,pillowblock_mount_y,pillowblock_mount_z])
-        pillowblock_mount = Color(pillowblock_mount,params['pillowblock_mount_plate_color'])
-        pillowblock_mount_tz = params['pillowblock_mount_face_tz'] + pillowblock_mount_z/2
-        pillowblock_mount_1 = Translate(pillowblock_mount,v=[px,py,pillowblock_mount_tz])
-        self.parts['pillowblock_mount_1'] = pillowblock_mount_1
-        pillowblock_mount_2 = Translate(pillowblock_mount,v=[-px,py,pillowblock_mount_tz])
-        self.parts['pillowblock_mount_2'] = pillowblock_mount_2
-        pillowblock_mount_3 = Translate(pillowblock_mount,v=[px,-py,pillowblock_mount_tz])
-        self.parts['pillowblock_mount_3'] = pillowblock_mount_3
-        pillowblock_mount_4 = Translate(pillowblock_mount,v=[-px,-py,pillowblock_mount_tz])
-        self.parts['pillowblock_mount_4'] = pillowblock_mount_4
-
         # Create y beams
-        y_beam_x = params['sled_assembly_model_y_beam_width']
-        y_beam_y = params['sled_assembly_model_width']
-        y_beam_z = params['sled_assembly_model_y_beam_height']
-        y_beam = Cube(size=[y_beam_x,y_beam_y,y_beam_z])
-        y_beam_thickness = params['sled_assembly_model_y_beam_thickness']
-        y_beam_void_x = y_beam_x - y_beam_thickness*2
-        y_beam_void_y = y_beam_y + y_beam_thickness*2
-        y_beam_void_z = y_beam_z - y_beam_thickness*2
-        y_beam_void = Cube(size=[y_beam_void_x,y_beam_void_y,y_beam_void_z])
-        y_beam = Difference([y_beam,y_beam_void])
+        y_beam_profile = params['sled_assembly_model_y_beam_profile']
+        y_beam_length = params['sled_assembly_model_width']
+        y_beam = extruded_profile.extruded_profile(y_beam_profile,y_beam_length)
         sled_assembly_model_color = params['sled_assembly_model_color']
         y_beam = Color(y_beam,sled_assembly_model_color)
-        y_beam_tx = params['sled_assembly_model_length']/2 - params['sled_assembly_model_y_beam_width']/2
-        y_beam_tz = params['pillowblock_mount_face_tz'] + params['pillowblock_mount_plate_thickness'] + y_beam_z/2
+        y_beam = Rotate(y_beam,a=90,v=[0,0,1])
+        y_beam = Rotate(y_beam,a=90,v=[1,0,0])
+        y_beam_profile_data = extruded_profile.profile_data[y_beam_profile]
+        y_beam_tx = params['sled_assembly_model_length']/2 - y_beam_profile_data['dy']/2
+        y_beam_tz = params['pillowblock_mount_face_tz'] + params['pillowblock_mount_plate_thickness'] + y_beam_profile_data['dx']/2
         y_beam_1 = Translate(y_beam,v=[y_beam_tx,0,y_beam_tz])
         self.parts['y_beam_1'] = y_beam_1
         y_beam_2 = Translate(y_beam,v=[-y_beam_tx,0,y_beam_tz])
         self.parts['y_beam_2'] = y_beam_2
 
         # Create bearing mount beam
-        profile = self.params['bearing_mount_beam_profile']
-        profile_data = extruded_profile.profile_data[profile]
-        length = self.params['bearing_mount_beam_length']
-        color = self.params['bearing_mount_beam_color']
-        bearing_mount_beam = extruded_profile.extruded_profile(profile,length,color)
+        bearing_mount_beam_profile = self.params['bearing_mount_beam_profile']
+        bearing_mount_beam_profile_data = extruded_profile.profile_data[bearing_mount_beam_profile]
+        bearing_mount_beam_length = params['sled_assembly_model_length'] - 2*y_beam_profile_data['dy']
+        bearing_mount_beam_color = self.params['bearing_mount_beam_color']
+        bearing_mount_beam = extruded_profile.extruded_profile(bearing_mount_beam_profile,bearing_mount_beam_length,bearing_mount_beam_color)
 
         # Rotate and Traslate cross beam into position
         # bearing_mount_beam = Rotate(bearing_mount_beam,a=90,v=[0,0,1])
         # bearing_mount_beam = Rotate(bearing_mount_beam,a=90,v=[1,0,0])
         bearing_mount_beam = Rotate(bearing_mount_beam,a=90,v=[0,1,0])
-        bearing_mount_beam_thickness = profile_data['dx']
+        bearing_mount_beam_thickness = bearing_mount_beam_profile_data['dx']
         # z_shift = 0.5*bearing_mount_beam_thickness + 2*bearing_mount_thickness + bearing_mount_gap
-        bearing_mount_beam_tz = params['bearing_mount_beam_tz']
+        bearing_mount_beam_tz = y_beam_tz
         bearing_mount_beam = Translate(bearing_mount_beam,v=[0,0,bearing_mount_beam_tz])
         self.parts['bearing_mount_beam'] = bearing_mount_beam
+
+        # Create pillowblocks
+        pillowblock_profile = params['pillowblock_profile']
+        pillowblock_length = params['pillowblock_length']
+        pillowblock = extruded_profile.extruded_profile(pillowblock_profile,pillowblock_length)
+        pillowblock = Color(pillowblock,params['pillowblock_color'])
+        pillowblock = Rotate(pillowblock,a=90,v=[1,0,0])
+        pillowblock = Rotate(pillowblock,a=90,v=[0,0,1])
+        pillowblock_tx = params['sled_assembly_model_length']/2 - y_beam_profile_data['dy']/2
+        pillowblock_ty = params['water_channel_rail_rail_distance']/2
+        pillowblock_1 = Translate(pillowblock,v=[pillowblock_tx,pillowblock_ty,0])
+        self.parts['pillowblock_1'] = pillowblock_1
+        pillowblock_2 = Translate(pillowblock,v=[-pillowblock_tx,pillowblock_ty,0])
+        self.parts['pillowblock_2'] = pillowblock_2
+        pillowblock_3 = Translate(pillowblock,v=[pillowblock_tx,-pillowblock_ty,0])
+        self.parts['pillowblock_3'] = pillowblock_3
+        pillowblock_4 = Translate(pillowblock,v=[-pillowblock_tx,-pillowblock_ty,0])
+        self.parts['pillowblock_4'] = pillowblock_4
+
+        # Create pillowblock mount plates
+        pillowblock_mount_x = y_beam_profile_data['dy'] + 2.0
+        pillowblock_mount_y = params['pillowblock_mount_plate_width']
+        pillowblock_mount_z = params['pillowblock_mount_plate_thickness']
+        pillowblock_mount = Cube(size=[pillowblock_mount_x,pillowblock_mount_y,pillowblock_mount_z])
+        pillowblock_mount = Color(pillowblock_mount,params['pillowblock_mount_plate_color'])
+        pillowblock_mount_tz = params['pillowblock_mount_face_tz'] + pillowblock_mount_z/2
+        pillowblock_mount_1 = Translate(pillowblock_mount,v=[pillowblock_tx,pillowblock_ty,pillowblock_mount_tz])
+        self.parts['pillowblock_mount_1'] = pillowblock_mount_1
+        pillowblock_mount_2 = Translate(pillowblock_mount,v=[-pillowblock_tx,pillowblock_ty,pillowblock_mount_tz])
+        self.parts['pillowblock_mount_2'] = pillowblock_mount_2
+        pillowblock_mount_3 = Translate(pillowblock_mount,v=[pillowblock_tx,-pillowblock_ty,pillowblock_mount_tz])
+        self.parts['pillowblock_mount_3'] = pillowblock_mount_3
+        pillowblock_mount_4 = Translate(pillowblock_mount,v=[-pillowblock_tx,-pillowblock_ty,pillowblock_mount_tz])
+        self.parts['pillowblock_mount_4'] = pillowblock_mount_4
 
         # Create air bearing mount plates and rotate it to match the bearing_mount_beam
         bearing_mount_maker = air_bearing_rab_mount.Bearing_Mount(params=params)

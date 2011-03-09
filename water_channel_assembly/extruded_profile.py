@@ -7,14 +7,15 @@ from params import params
 
 # Data for profiles
 profile2dxf= {
-        '1010'        : 'profiles/1010.dxf',
-        '1020'        : 'profiles/1020.dxf',
-        '1030'        : 'profiles/1030.dxf',
-        '2040'        : 'profiles/2040.dxf',
-        '1545'        : 'profiles/1545.dxf',
-        '3030'        : 'profiles/3030.dxf',
-        '3060'        : 'profiles/3060.dxf',
-        'pillowblock' : 'profiles/pillowblock.dxf',
+        '1010'            : 'profiles/1010.dxf',
+        '1020'            : 'profiles/1020.dxf',
+        '1030'            : 'profiles/1030.dxf',
+        '2040'            : 'profiles/2040.dxf',
+        '1545'            : 'profiles/1545.dxf',
+        '3030'            : 'profiles/3030.dxf',
+        '3060'            : 'profiles/3060.dxf',
+        'pillowblock'     : 'profiles/pillowblock.dxf',
+        'rectangulartube' : 'profiles/rectangulartube.dxf',
         }
 
 data_1010 = {
@@ -71,15 +72,21 @@ data_pillowblock = {
         'dy' : 2.3,
         }
 
+data_rectangulartube = {
+        'dx' : 2.0,
+        'dy' : 5.0,
+        }
+
 profile_data = {
-        '1010' : data_1010,
-        '1020' : data_1020,
-        '1030' : data_1030,
-        '2040' : data_2040,
-        '1545' : data_1545,
-        '3030' : data_3030,
-        '3060' : data_3060,
-        'pillowblock' : data_pillowblock,
+        '1010'            : data_1010,
+        '1020'            : data_1020,
+        '1030'            : data_1030,
+        '2040'            : data_2040,
+        '1545'            : data_1545,
+        '3030'            : data_3030,
+        '3060'            : data_3060,
+        'pillowblock'     : data_pillowblock,
+        'rectangulartube' : data_rectangulartube,
         }
 
 def extruded_profile(profile,length_in,color=None):
